@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # Decision Intelligence Platform
 
 A production-grade Decision Comparison Platform for AWS Builder Center that compares multiple technical options using AI-powered analysis.
@@ -257,3 +257,4 @@ The platform is designed for easy updates:
 =======
 # decision-intelligence-platform
 >>>>>>> 018f462924f5c88daddadbe13eb658b5282f5ecb
+
