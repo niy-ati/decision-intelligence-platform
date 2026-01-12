@@ -1,0 +1,151 @@
+name: "Decision Intelligence Agent"
+description: "AI agent for analyzing technical decisions and trade-offs"
+version: "1.0.0"
+
+# Agent Configuration
+agent:
+  type: "decision_analysis"
+  model: "gpt-4"
+  temperature: 0.7
+  max_tokens: 2000
+
+# Agent Capabilities
+capabilities:
+  - "technical_option_analysis"
+  - "constraint_evaluation" 
+  - "trade_off_identification"
+  - "risk_assessment"
+  - "scenario_mapping"
+  - "recommendation_generation"
+
+# Input Schema
+input_schema:
+  type: "object"
+  required: ["options", "constraints", "use_case"]
+  properties:
+    options:
+      type: "array"
+      items:
+        type: "object"
+        properties:
+          name: { type: "string" }
+          description: { type: "string" }
+          cost: { type: "number", minimum: 1, maximum: 10 }
+          latency: { type: "number", minimum: 1, maximum: 10 }
+          scalability: { type: "number", minimum: 1, maximum: 10 }
+          compliance: { type: "string", enum: ["none", "basic", "soc2", "hipaa", "pci", "gdpr"] }
+          cloud: { type: "string", enum: ["aws", "azure", "gcp", "multi"] }
+          team_skill_required: { type: "string", enum: ["beginner", "intermediate", "advanced", "expert"] }
+    constraints:
+      type: "object"
+      properties:
+        budget: { type: "number", minimum: 1, maximum: 10 }
+        max_latency: { type: "number", minimum: 1, maximum: 10 }
+        required_scale: { type: "number", minimum: 1, maximum: 10 }
+        compliance: { type: "string", enum: ["none", "basic", "soc2", "hipaa", "pci", "gdpr"] }
+        preferred_cloud: { type: "string", enum: ["aws", "azure", "gcp", "multi"] }
+        team_skill: { type: "string", enum: ["beginner", "intermediate", "advanced", "expert"] }
+    use_case: { type: "string" }
+
+# Output Schema
+output_schema:
+  type: "object"
+  properties:
+    summary: { type: "string" }
+    key_insights: 
+      type: "array"
+      items: { type: "string" }
+    recommendations:
+      type: "array" 
+      items: { type: "string" }
+    risk_factors:
+      type: "array"
+      items: { type: "string" }
+    best_for_scenarios:
+      type: "object"
+      additionalProperties: { type: "string" }
+
+# Agent Prompts
+prompts:
+  system: |
+    You are a senior technical decision analyst specializing in cloud architecture and technology selection.
+    Your role is to provide comprehensive, unbiased analysis of technical options.
+    
+    Key principles:
+    - Never recommend just one option - always provide multiple perspectives
+    - Focus on trade-offs and context-dependent decisions
+    - Consider both technical and business factors
+    - Highlight risks and mitigation strategies
+    - Provide scenario-based recommendations
+    
+    Analysis framework:
+    1. Evaluate each option against constraints
+    2. Identify key trade-offs between options
+    3. Map options to different use case scenarios
+    4. Highlight decision-critical factors
+    5. Provide multiple recommendation paths
+
+  analysis: |
+    Analyze the following technical decision:
+    
+    Use Case: {use_case}
+    Options: {options}
+    Constraints: {constraints}
+    Scores: {scores}
+    Trade-offs: {tradeoffs}
+    
+    Provide:
+    1. Executive summary of the decision landscape
+    2. Key insights from the analysis
+    3. Multiple recommendations for different scenarios
+    4. Risk factors to consider
+    5. Best-fit scenarios for each option
+    
+    Remember: Avoid single "best" answers. Focus on "best for X scenario" recommendations.
+
+# Scoring Weights
+scoring_weights:
+  cost: 0.25
+  latency: 0.20
+  scalability: 0.20
+  compliance: 0.15
+  cloud: 0.10
+  skill: 0.10
+
+# Decision Rules
+decision_rules:
+  - name: "compliance_mandatory"
+    condition: "constraints.compliance != 'none'"
+    action: "filter_options_by_compliance"
+    
+  - name: "budget_constraint"
+    condition: "constraints.budget <= 3"
+    action: "prioritize_cost_efficiency"
+    
+  - name: "performance_critical"
+    condition: "constraints.max_latency <= 3"
+    action: "prioritize_performance"
+    
+  - name: "skill_gap"
+    condition: "option.team_skill_required > constraints.team_skill"
+    action: "apply_skill_penalty"
+
+# Integration Points
+integrations:
+  backend_api: "http://backend:8000"
+  database: "sqlite:///decisions.db"
+  
+# Monitoring
+monitoring:
+  log_level: "INFO"
+  metrics:
+    - "decision_accuracy"
+    - "user_satisfaction"
+    - "recommendation_adoption"
+    
+# Security
+security:
+  input_validation: true
+  output_sanitization: true
+  rate_limiting: 
+    requests_per_minute: 60
