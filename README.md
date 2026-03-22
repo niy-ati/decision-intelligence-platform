@@ -42,10 +42,6 @@ cd decision-intelligence-platform
 docker-compose up --build
 ```
 
-### 2. Access the Application
-- **Frontend**: http://localhost:3000
-- **Backend API**: http://localhost:8000
-- **API Documentation**: http://localhost:8000/docs
 
 ### 3. Try the Examples
 The platform includes pre-loaded examples:
